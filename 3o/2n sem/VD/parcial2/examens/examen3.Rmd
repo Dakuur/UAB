@@ -1,0 +1,233 @@
+```{r}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(tidyr)
+library(gganimate)
+library(gifski)
+library(treemapify)
+library(maps)
+library(ggmap)
+library(ggcorrplot)
+library(devtools)
+library(factoextra)
+
+
+df <- read.csv("country_data.csv")
+count(df)
+```
+
+```{r}
+df1 <- df %>% drop_na()
+count(df1)
+```
+
+```{r}
+df2 <- df1 %>% 
+  filter(population > 1000, population < 3000000) # 1 million
+
+count(df2)
+
+df_filtrado <- df1 %>%
+  filter(!(name %in% df2$name))
+df_filtrado$name
+```
+
+Haz un bubble chart con las variables Life expectancy 2018, PIB per capita
+USD 2018 y Population 2018, donde Population sea el tamaño de los círculos.
+Los círculos deben estar coloreados por la variable de tu elección que creas que más
+aporta a la visualización.
+Añade las etiquetas, leyendas, y transparencias necesarias para que la gráfica sea
+legible y comprensible.
+
+```{r}
+bubble_chart <- ggplot(df2, aes(text = name,
+                                x = life_expectancy_male,
+                                y = gdp_per_capita,
+                                size = population, 
+                                color = region)) +
+  geom_point(alpha = 0.6) +
+  scale_size(range = c(1, 20), name = "Population") +
+  labs(title = "Bubble Chart: Life Expectancy vs GDP per Capita",
+       x = "Life Expectancy (2018)",
+       y = "GDP per Capita (USD, 2018)",
+       color = "Continent") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+ggplotly(bubble_chart, tooltip = "text")
+```
+
+```{r}
+starwars
+```
+
+```{r}
+starwars
+# data massaging:
+
+starwars2 = starwars %>%
+  drop_na(mass) %>%
+  drop_na(species) %>%
+  replace_na(list(gender = "none"))
+
+top_species <- starwars2 %>%
+  count(species, sort = TRUE) %>%
+  slice_head(n = 15) %>%
+  pull(species)
+
+# Filtrar el dataset por esas especies
+starwars_top <- starwars2 %>%
+  filter(species %in% top_species)
+
+
+treemap <- ggplot(starwars2, aes(area = mass, fill = factor(gender), label = name, subgroup=gender)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "black", place = "centre", grow = TRUE) +
+  geom_treemap_subgroup_border() +
+  geom_treemap_subgroup_text(color='white')
+  labs(title = "Personatges de Star Wars",
+       subtitle = "Pes dels personatges per espècie",
+       fill = "gender") +
+  theme_minimal() +
+  theme()
+
+treemap
+```
+
+robots only
+
+```{r}
+robots <- starwars2 %>%
+  filter(species == "Droid")
+
+treemap <- ggplot(robots, aes(area = mass, label = name)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre", grow = TRUE) +
+  labs(title = "Personatges de Star Wars",
+       subtitle = "Pes dels personatges per espècie") +
+  theme_minimal() +
+  theme()
+
+treemap
+```
+
+
+```{r}
+starwars3 <- starwars2 %>%
+  group_by(species) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count))
+
+treemap <- ggplot(starwars3, aes(area = Count, fill=Count, label = species)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre", grow = TRUE) +
+  labs(title = "Personatges de Star Wars",
+       subtitle = "Població per especie") +
+  theme_minimal() +
+  theme()
+
+treemap
+```
+
+```{r}
+starwars2 = starwars %>%
+  drop_na(height) %>%
+  drop_na(mass) %>%
+  drop_na(species) %>%
+  drop_na(sex) %>%
+  drop_na(name) %>%
+  drop_na(homeworld) %>%
+  replace_na(list(gender = "none"))
+
+visualitzacio= ggplot(starwars2, aes(area=mass, fill=sex, label=name, subgroup=homeworld))+
+  geom_treemap()+ geom_treemap_subgroup_border(colour ="black",size=3)+
+  geom_treemap_subgroup_text(alpha=0.9,colour ="white")+
+  geom_treemap_text (aes(label=name))+labs(title = "Weights of Star Wars Characters")
+
+visualitzacio
+```
+```{r}
+visualitzacio= ggplot(starwars2, aes(area=height, fill=sex, label=name, subgroup=homeworld))+
+  geom_treemap()+ geom_treemap_subgroup_border(colour ="black",size=3)+
+  geom_treemap_subgroup_text(alpha=0.9,colour ="white")+
+  geom_treemap_text (aes(label=name))+labs(title = "Heights of Star Wars Characters")
+
+visualitzacio
+```
+
+
+```{r}
+nba <- read.csv("http://datasets.flowingdata.com/ppg2008.csv", sep=",")
+nba <- as_tibble(nba)
+df<-nba[,c('PTS','FGM','FGA','DRB','ORB','TRB')]
+
+pairs(df)
+```
+
+```{r}
+# install.packages("Formula")
+
+pca<-prcomp(df, center=TRUE, scale.=TRUE) 
+fviz_pca_biplot(pca, geom.ind="point", geom.var = c("arrow",
+"text"), addEllipses = TRUE, legend.tittle="Groups")
+```
+
+Mostra el codi i una gràfica de línies de l‘evolució del nombre de suïcidis
+per anys i generació. Digues quines generacions són capdavanteres i en quin
+període d’anys ho són.
+
+```{r}
+suicides <- read.csv("suicides.csv")
+
+suicides
+
+df <- suicides %>%
+  group_by(year, generation) %>%
+  #summarise(Count = n(), .groups = "drop") %>%
+  summarise(Count = sum(suicides_no, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(Count))
+
+# Crear el gráfico
+ggplot_suicides <- ggplot(df, aes(x = year, y = Count, color = generation)) +
+  geom_line() +
+  labs(title = "Nombre de suicidis per any",
+       x = "Any", y = "Nombre") +
+  theme_minimal()
+
+ggplot_suicides
+
+# Interactivo con plotly
+ggplotly(ggplot_suicides)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,160 @@
+```{r}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(tidyr)
+library(gganimate)
+library(gifski)
+library(treemapify)
+library(maps)
+library(ggmap)
+library(ggcorrplot)
+library(devtools)
+library(factoextra)
+
+df <- read.csv("australia.csv")
+```
+
+```{r}
+df <- df %>%
+  group_by(Year,Airline) %>%
+  summarize(NRutes = n()) 
+ggplotR <- ggplot(df, aes(x=Year, y=NRutes,
+color=Airline)) + geom_line()
+ggplotly(ggplotR)
+```
+
+```{r}
+df3 <- df %>% filter(Airline == "Qantas Airways" | Airline =="Jetstar" | Airline == "Virgin Australia")
+ggplotQJV <- ggplot(df3, aes(x=Year, y=NRutes,
+color=Airline)) + geom_line()
+ggplotly(ggplotQJV)
+```
+
+```{r}
+df_gif <- df %>%
+ filter(Year < 2021) %>%
+ group_by(Year) %>%
+ # The * 1 makes it possible to have non-integer ranks while sliding
+ mutate(rank = rank(-NRutes)) %>%
+ group_by(Airline) %>%
+ filter(rank <=10) %>%
+ ungroup()
+
+anim <- ggplot(df_gif, aes(rank, group = Airline,
+ fill = as.factor(Airline), color = as.factor(Airline))) +
+ geom_tile(aes(y = NRutes/2,
+ height = NRutes,
+ #width = 0.9), alpha = 0.8, color = "black") +
+ width = 0.9), alpha = 0.8, color = NA) +
+ geom_text(aes(y = 0, label = paste(Airline, " ")), vjust = 0.2, hjust = 1) +
+ geom_text(aes(y=NRutes,label = NRutes, hjust=0)) +
+ coord_flip(clip = "off", expand = FALSE) +
+ scale_y_continuous(labels = scales::comma) +
+ scale_x_reverse() +
+ guides(color = "none", fill = "none") +
+ labs(title = 'ANY : {closest_state}',
+ subtitle = "Top 10 de Companyies amb Rutes de 2003-2022",
+ caption = "Top 10 de Companyies amb Rutes de 2003-2022") +
+ transition_states(Year, transition_length = 4, state_length = 1, wrap = FALSE) +
+ theme_minimal()
+
+anim
+
+animate(anim, 200, fps = 20, duration= 30, width = 1200, height = 1000, renderer = gifski_renderer("USNamesF.gif"), end_pause = 15, start_pause = 15)
+```
+
+```{r}
+df <- read.csv("australia.csv")
+
+df2022<- df%>%filter(Australian_City %in%
+c("Adelaide","Brisbane", "Cairns", "Darwin", "Melbourne", "Perth",
+"Sydney")) %>% filter (Year==2022) %>%filter(In_Out=="O") %>% group_by(Australian_City) %>% summarize(NRutes = n())
+
+locations <- data.frame(
+  Australian_City = c("Adelaide", "Brisbane", "Cairns", "Darwin", "Melbourne", "Perth", "Sydney"),
+  Latitude = c(-34.9285, -27.4698, -16.9186, -12.4634, -37.8136, -31.9505, -33.8688),
+  Longitude = c(138.6007, 153.0251, 145.7781, 130.8456, 144.9631, 115.8605, 151.2093)
+)
+
+df2022 <- df2022 %>%
+  left_join(locations, by = "Australian_City")
+
+library (ozmaps)
+library (sf)
+
+oz_states <- ozmaps::ozmap_states
+
+plot = ggplot() + geom_sf(data = oz_states)+geom_point(data = df2022, mapping =
+aes(x = Longitude, y = Latitude,size=NRutes), alpha=0.5,
+color="blue")+coord_sf()+theme(panel.grid.major = element_blank(),
+panel.grid.minor = element_blank()) +
+  scale_size_continuous(range=c(3,15),"Nombre de rutes")
+ 
+ggplotly(plot) %>%
+  layout(title = "Nombre de rutes per ciutat a Austràlia el 2022",
+         xaxis = list(title = "Longitud"),
+         yaxis = list(title = "Latitud"))
+ 
+```
+
+Mostra un mapa d’arbre (treemap) que et permeti saber des de quina de
+les dues ciutats, Melbourne o Sidney, van volar més vols l’any 2022 a cada regió
+de servei (Service_Region)
+
+```{r}
+df2022 <- df %>%
+  filter(Year == 2022, Australian_City %in% c("Melbourne", "Sydney"), In_Out=="O") %>%
+  group_by(Service_Region, Australian_City) %>%
+  summarize(NRutes = n(), .groups = 'drop')
+
+ggplot(df2022, aes(area = NRutes, fill = Australian_City, subgroup=Service_Region))+geom_treemap()+
+  geom_treemap_subgroup_border(colour = "black",size=3)+
+  geom_treemap_subgroup_text(alpha=0.9,colour = "white")+
+  labs(title =
+"Regions on es podia volar des de Melbourne i Sidney al 2022", fill="Ciutat
+Australiana")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

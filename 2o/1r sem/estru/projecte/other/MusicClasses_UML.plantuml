@@ -1,0 +1,77 @@
+@startuml
+class MusicFiles {
+    reload_fs()
+    files_added()
+    files_removed()
+    get_file_list()
+    _files : set 
+    _files_added : set 
+    _files_removed : set 
+    __init__(_files: set , _files_added: set , _files_removed: set )
+}
+class MusicID {
+    __len__()
+    generate_uuid()
+    get_uuid()
+    remove_uuid()
+    get_uuid_dict()
+        _uuids : dict 
+    __init__(_uuids: dict )
+}
+class MusicData {
+    __len__()
+    get_uuids()
+    add_song()
+    remove_song()
+    load_metadata()
+    get_file()
+    get_filename()
+    get_title()
+    get_artist()
+    get_album()
+    get_genre()
+    get_duration()
+        _songs : dict 
+    __init__(_songs: dict )
+}
+class MusicPlayer {
+    update_data()
+    print_song()
+    play_file()
+    play_song()
+    _songs_data : MusicData 
+    _player : vlc.MediaPlayer 
+    __init__(_songs_data: MusicData , _player: vlc.MediaPlayer )
+}
+class PlayList {
+    __len__()
+    load_file()
+    play()
+    add_song_at_end()
+    remove_first_song()
+    remove_last_song()
+    _uuids : MusicID 
+    _player : MusicPlayer 
+    _playlist : list 
+    __init__(_uuids: MusicID , _player: MusicPlayer , _playlist: list )
+}
+class SearchMetadata {
+    update_songs()
+    search_by_attribute()
+    title()
+    artist()
+    album()
+    genre()
+    and_operator()
+    or_operator()
+    _songs : MusicData 
+    __init__(_songs: MusicData )
+}
+
+MusicPlayer --> MusicData
+MusicPlayer --> MediaPlayer
+PlayList --> MusicID
+PlayList --> MusicPlayer
+SearchMetadata --> MusicData
+
+@enduml

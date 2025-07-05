@@ -1,0 +1,28 @@
+name: project-venv
+channels:
+- pytorch
+- defaults
+dependencies:
+- python==3.12
+- pip
+- pip:
+  - torch
+  - torchvision
+  - torchaudio
+  - onnx
+  - wandb
+  - onnxruntime
+  - ipykernel
+  - matplotlib
+  - opencv-python
+  - kornia
+  - scikit-learn
+  - seaborn
+  - lpips
+  - piq
+  - lpips
+  - --extra-index-url https://download.pytorch.org/whl/cu128 # Si tens GPU i CUDA !!!
+- numpy
+- tqdm
+- tensorboard
+- protobuf

@@ -1,0 +1,70 @@
+experiment: "test-albert-ss"  # Nom de l'experiment
+
+dataset:
+  training: [
+    'rosbag2_2025_05_08-12_07_12']
+    #"rosbag2_2025_05_12-09_26_05_clearsunset_town01",
+    #"rosbag2_2025_05_12-10_02_43_hardrainnoon_town01",
+    #"rosbag2_2025_05_12-10_48_58_wetnoon_town01",
+    #"rosbag2_2025_05_12-11_23_59_cloudynoon_town01",
+    #"rosbag2_2025_05_12-12_29_39_midrainsunset_town01",
+    #"rosbag2_2025_05_12-07_27_45_clearnoon_town02",
+    #"rosbag2_2025_05_12-09_46_43_clearsunset_town02",
+    #"rosbag2_2025_05_12-10_24_13_hardrainnoon_town02",
+    #"rosbag2_2025_05_12-13_07_38_midrainsunset_town02",
+    #"rosbag2_2025_05_12-11_54_29_cloudynoon_town02",
+
+  
+  validation: [
+    'rosbag2_2025_05_08-12_07_12']
+    #"rosbag2_2025_05_12-11_09_28_wetnoon_town02",
+    #"rosbag2_2025_05_12-07_06_54_clearnoon_town01"
+  
+  batch_size: 16
+  num_workers: 1
+  semantic_segmentation: False
+  train_percentage: 1.0
+  val_percentage: 1.0
+  
+  cameras:
+    image_size: [300, 300]  # Per si es vol fer downsize de la imatge en un futur
+    # input_channels: 3     # Es calcula a partir de la imatge
+    num_cameras: 8 # Número de càmeres
+    dropout_prob: 0 # Probabilitat de dropout per cada càmera
+  
+  bev:
+    image_size: [300, 300]  # No es fa servir de moment
+    # output_channels: 3    # Es calcula a partir de la imatge
+
+architecture:
+  model: "unet"
+  fusion_method: "mean"  # Opcions: "mean", "max", "min", "concat"
+
+training:
+  epochs: 100
+  save_interval: 5
+  #loss: "CrossEntropy"             # MSE/CrossEntropy
+  learning_rate:
+    type: "plateau"        # Tipus de scheduler: "step", "plateau" o "cosine"
+    initial: 0.00025         # Valor inicial del learning rate (obligatori)
+    gamma: 0.5             # Factor de reducció del LR (comú a step/plateau)
+    step_size: 10          # (només "step") Cada quantes epochs es redueix el LR
+    patience: 5            # (només "plateau") N epochs sense millora abans de reduir LR
+    T_max: 50
+  loss_components:
+    #Dice: 0.5
+    #SSIM: 0.2
+    #LPIPS: 0.1
+    #PSNR: 0.3
+    MSE: 1
+    # CrossEntropy: 1
+
+    # Funcions de pèrdua suportades:
+    # MSE           → Vàlida per RGB i SS
+    # LPIPS         → Només RGB (valors entre 0 i 1)
+    # PSNR          → Només RGB (valors entre 0 i 1, millor si clampat)
+    # SSIM          → Només RGB (valors entre 0 i 1, millor si clampat)
+    # CrossEntropy  → Només per Semantic Segmentation amb target en [classe_idx]
+    # Dice          → Només per Semantic Segmentation (one-hot o binari)
+
+

@@ -1,0 +1,46 @@
+```{r}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(tidyr)
+library(gganimate)
+library(gifski)
+library(treemapify)
+library(maps)
+library(ggmap)
+library(ggcorrplot)
+library(devtools)
+library(factoextra)
+library(shiny)
+```
+```{r}
+df <- read.csv("suicides.csv")
+
+names(df)[1] <- "country"
+names(df)[10] <- "gdp_for_year"
+names(df)[11] <- "gdp_per_capita" 
+
+str(df)
+
+SWorldPIB <- df %>%
+  select(country, year, suicides.100k.pop, population, gdp_per_capita) %>%
+  group_by(country) %>%
+  summarise(numeroS.100k = sum(suicides.100k.pop), poblacio=sum(population), PIB=mean(gdp_per_capita))
+
+plot_ly(SWorldPIB, x=~numeroS.100k, y=~poblacio, z=~PIB, color=~country,
+type='scatter3d', mode='markers') 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

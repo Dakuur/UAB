@@ -1,0 +1,122 @@
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #b0bbe8;
+    color: #333;
+    background: repeating-linear-gradient(
+        90deg,          /* Dirección del gradiente */
+        #004D98,           /* Color inicial */
+        #004D98 100px,      /* Ancho de la raya azul */
+        #A50044 100px,       /* Color de la raya roja */
+        #A50044 200px        /* Ancho de la raya roja */
+    );
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #b0bbe8;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); /* Sombra simple por las 4 direcciones */
+}
+
+/* Títulos */
+h1 {
+    text-align: center;
+    color: #000000;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #004D98;
+    font-size: 1.5em;
+    border-bottom: 2px solid #751d3a;
+    padding-bottom: 5px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+h3 {
+    color: #A50044;
+    font-size: 1.2em;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+/* Texto general */
+p {
+    color: #000000;
+    line-height: 1.6;
+    font-size: 1em;
+}
+
+ul {
+    padding-left: 20px;
+    color: #444;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+/* Información de contacto */
+.contact-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.contact-info p {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+.contact-info a {
+    color: #0077b5;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+/* Sección general */
+.section {
+    margin-bottom: 20px;
+    background: #ffa1a1;
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: inset -20px -20px 60px #d98989,
+                inset 20px 20px 60px #ffb9b9;
+}
+
+/* Enlaces y énfasis */
+a {
+    color: #1a73e8;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+em {
+    color: #444444;
+}
+
+/* Video */
+.video-container {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.video-container iframe {
+    width: 100%;
+    max-width: 560px;
+    height: 315px;
+    border: none;
+    border-radius: 10px;
+    /* box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff; */
+}

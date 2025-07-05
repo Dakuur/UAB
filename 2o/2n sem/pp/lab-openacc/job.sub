@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#SBATCH --job-name=GPU
+#SBATCH -N 1 # number of nodes
+#SBATCH --partition=cuda-ext.q
+####SBATCH --gres=gpu:GeForceGTX1080Ti:1
+#SBATCH --gres=gpu:GeForceRTX3080:1
+
+
+#module load cuda/11.2
+module load nvhpc/21.2
+module load gcc/12.1.1
+
+#gcc kmeans.c kmeanslib.c -Ofast -o executable
+nvc -acc=gpu -ta=tesla -Minfo=all -o executable kmeans.c kmeanslib.c -w
+
+#nvc -Minfo=all -o executable $1
+#nvcc -o executable $1 -lm -lcudart
+
+
+
+if [ "$2" = "-prof" ]; then
+	echo "Nvidia profiler"
+	pgaccelinfo
+	nsys nvprof --print-gpu-trace ./executable test $1 imagen.bmp out.bmp 
+else 
+	./executable test $1 imagen.bmp out.bmp
+fi
+
+rm executable

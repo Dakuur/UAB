@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-train-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: model-train
+        image: model-train:default
+        env:
+        - name: MODEL_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: model-config
+              key: MODEL_PATH
+      restartPolicy: OnFailure
+

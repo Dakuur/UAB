@@ -1,0 +1,1 @@
+awk '/alumnes/ {print}' > res_cerca.txt

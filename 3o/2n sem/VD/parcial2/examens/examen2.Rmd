@@ -1,0 +1,157 @@
+```{r}
+library(plotly)
+
+df = read.csv("beers.csv")
+```
+
+```{r}
+str(df)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(tidyr)
+library(gganimate)
+library(gifski)
+library(treemapify)
+library(maps)
+library(ggmap)
+library(ggcorrplot)
+
+
+df_tree <- df %>% group_by(city, beer) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  arrange(desc(Count)) %>%
+  slice_head(n = 30)
+
+treemap <- ggplot(df_tree, aes(area = Count, fill = city, label = beer)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre", grow = TRUE) +
+  labs(title = "Beers") +
+  theme_minimal() +
+  theme(legend.position = "none")
+  
+treemap # no hi ha implementacio per ggplotly per treemap
+```
+
+```{r}
+nba <- read.csv("http://datasets.flowingdata.com/ppg2008.csv", sep=",")
+str(nba)
+```
+
+```{r}
+cols <- c("PTS", "FGM", "FGA", "DRB", "ORB", "TRB")
+subset_data <- nba[cols]
+
+# Calculem la matriu de correlació
+cor_matrix <- cor(subset_data, use = "complete.obs")
+
+# Visualització: correlograma
+ggcorrplot(cor_matrix, method = "circle", type = "lower", 
+           title = "Correlació entre estadístiques de la NBA",
+           lab = TRUE, tl.col = "black", tl.srt = 45)
+```
+
+```{r}
+# splom:
+pairs(subset_data)
+```
+
+Agafarem el dataset de noms del padró de naixements de Barcelona. Utilitzeu les
+llibreries (plotly, gganimate, shiny, etc.) que creieu convenients i dibuixeu les
+gràfiques que us facin falta. 
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(gganimate)
+library(gifski)
+
+df <- read.csv("2025_pad_m_nom_decada_sexe.csv")
+
+str(df)
+
+df_anim <- df %>%
+  filter(SEXE == 1) %>%
+  mutate(Data_Referencia = as.Date(Data_Referencia)) %>%
+  filter(!is.na(Data_Referencia)) %>%
+  group_by(Data_Referencia, NOM) %>%
+  summarise(Count = sum(Valor, na.rm = TRUE), .groups = "drop") %>%
+  arrange(Data_Referencia, desc(Count)) %>%
+  group_by(Data_Referencia) %>%
+  mutate(Rank = row_number()) %>%
+  filter(Rank <= 10)
+
+df_anim
+str(df_anim$Data_Referencia)
+
+anim_plot <-ggplot(df_anim, aes(x = reorder(NOM, -Count), y = Count, fill = NOM)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = 'Top 10 noms femenins a Barcelona',
+       subtitle = 'Data: {frame_time}',
+       x = 'Noms', y = 'Nombre de naixements') +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  transition_time(Data_Referencia) +
+  ease_aes('linear')
+
+animated_gif <- animate(anim_plot, 
+                        nframes = 100, 
+                        renderer = gifski_renderer(),
+                        rewind = FALSE)
+anim_save("top_noms_femenins_1925_1950.gif", animation = animated_gif)
+```
+Mostra el codi i la gràfica de l’evolució temporal dels noms femenins
+(gràfica 1) i fixa’t amb els tres noms femenins més posats l’any 2015. Digues quin
+són aquests noms per ordre decreixent i mostra el codi i la gràfica de l’evolució
+temporal d’aquests tres noms (gràfica 2).
+
+```{r}
+df_2015 <- df %>%
+  filter(Data_Referencia == "2025-01-01") %>%
+  filter(SEXE == 1) %>%
+  group_by(NOM) %>%
+  summarise(Valor = sum(Valor, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(Valor)) %>%
+  slice_head(n = 10)
+
+df_2015
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

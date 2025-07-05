@@ -1,0 +1,64 @@
+import time
+import math
+import random
+
+def approximate_pi_monte_carlo(n):
+  start_time = time.time()
+  inside = 0
+  for i in range(n):
+    x = random.uniform(-1, 1)
+    y = random.uniform(-1, 1)
+    if x**2 + y**2 <= 1:
+      inside += 1
+  elapsed_time = time.time() - start_time
+  pi_approximation = (inside / n) * 4
+  error = abs(pi_approximation - math.pi)
+  return elapsed_time, pi_approximation, error
+
+def approximate_pi_arithmetic_geometric_mean(n):
+  start_time = time.time()
+  a = 1.0
+  b = 1.0 / (2 ** 0.5)
+  t = 1.0 / 4.0
+  p = 1.0
+
+  for i in range(n):
+    an = (a + b) / 2
+    bn = (a * b) ** 0.5
+    tn = t - p * (a - an) ** 2
+    pn = 2 * p
+
+    a, b, t, p = an, bn, tn, pn
+
+  elapsed_time = time.time() - start_time
+  pi_approximation = (a + b) ** 2 / (4 * t)
+  error = abs(pi_approximation - math.pi)
+  return elapsed_time, pi_approximation, error
+
+def main():
+  while True:
+    print("Menu:")
+    print("1. Approximate pi using the Monte Carlo method")
+    print("2. Approximate pi using the arithmetic-geometric mean method")
+    print("3. Quit")
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+      n = int(input("Enter the number of iterations: "))
+      elapsed_time, pi_approximation, error = approximate_pi_monte_carlo(n)
+      print(f"Elapsed time: {elapsed_time:.6f} seconds")
+      print(f"Approximation of pi: {pi_approximation:.6f}")
+      print(f"Error: {error:.6f}")
+    elif choice == 2:
+      n = int(input("Enter the number of iterations: "))
+      elapsed_time, pi_approximation, error = approximate_pi_arithmetic_geometric_mean(n)
+      print(f"Elapsed time: {elapsed_time:.6f} seconds")
+      print(f"Approximation of pi: {pi_approximation:.6f}")
+      print(f"Error: {error:.6f}")
+    elif choice == 3:
+      break
+    else:
+      print("Invalid choice. Try again.")
+
+if __name__ == "__main__":
+  main()

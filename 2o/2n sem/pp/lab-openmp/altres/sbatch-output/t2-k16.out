@@ -1,0 +1,52 @@
+TEST = 1
+
+WIDTH : 3840
+HEIGHT: 2160
+LENGHT: 8294400
+
+STEP 1: K = 16
+STEP 2: Init centroids
+STEP 3: Updating centroids
+
+Number of K-Means iterations: 17
+
+Centroide 0 : R[34]	G[28]	B[23]
+Centroide 1 : R[82]	G[47]	B[29]
+Centroide 2 : R[171]	G[171]	B[165]
+Centroide 3 : R[13]	G[77]	B[99]
+Centroide 4 : R[116]	G[77]	B[48]
+Centroide 5 : R[20]	G[13]	B[10]
+Centroide 6 : R[208]	G[207]	B[198]
+Centroide 7 : R[140]	G[135]	B[125]
+Centroide 8 : R[147]	G[111]	B[74]
+Centroide 9 : R[193]	G[107]	B[41]
+Centroide 10 : R[225]	G[194]	B[151]
+Centroide 11 : R[104]	G[102]	B[92]
+Centroide 12 : R[50]	G[46]	B[39]
+Centroide 13 : R[240]	G[237]	B[228]
+Centroide 14 : R[73]	G[71]	B[63]
+Centroide 15 : R[193]	G[151]	B[109]
+
+Time to Kmeans is 16 seconds and 189276 microseconds
+Checksum value = 42559141
+
+ Performance counter stats for './kmeans_OpenMP.exe test 16 imagen.bmp':
+
+         32.145,62 msec task-clock:u                     #    1,968 CPUs utilized             
+                 0      context-switches:u               #    0,000 /sec                      
+                 0      cpu-migrations:u                 #    0,000 /sec                      
+             5.946      page-faults:u                    #  184,971 /sec                      
+    82.837.518.180      cycles:u                         #    2,577 GHz                         (66,67%)
+     4.404.464.038      stalled-cycles-frontend:u        #    5,32% frontend cycles idle        (66,66%)
+    11.299.761.928      stalled-cycles-backend:u         #   13,64% backend cycles idle         (66,65%)
+   147.163.275.466      instructions:u                   #    1,78  insn per cycle            
+                                                  #    0,08  stalled cycles per insn     (66,66%)
+    13.445.959.915      branches:u                       #  418,283 M/sec                       (66,68%)
+       623.461.485      branch-misses:u                  #    4,64% of all branches             (66,68%)
+
+      16,335300638 seconds time elapsed
+
+      31,865455000 seconds user
+       0,029725000 seconds sys
+
+

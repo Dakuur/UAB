@@ -1,0 +1,186 @@
+```{r}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(tidyr)
+library(gganimate)
+library(gifski)
+library(treemapify)
+library(maps)
+library(ggmap)
+
+str(all_states)
+```
+Mostra el codi (en ggplotly) i la gràfica de línies de l’evolució temporal en anys
+del nombre dels noms femenins majors de 4.500 per any en tot els Estats Units (gràfica 1)
+i fixa’t amb els tres noms femenins més posats l’any 1945. Digues quin són aquests noms
+per ordre decreixent i mostra el codi (en ggplotly o shiny+plotly) i la gràfica de línies de
+l’evolució temporal d’aquests tres noms (gràfica 2). Per a cada gràfica, explica si fas Data
+Massaging i quines operacions fas i posa també el codi. 
+
+```{r}
+# data massaging
+df <- all_states
+
+# 1. Filtrar només noms femenins
+df_fem <- df %>% filter(Sex == "F")
+
+# 2. Agrupar i sumar el total per nom
+df_totals <- df_fem %>%
+  group_by(Name) %>%
+  summarise(Total = sum(Count, na.rm = TRUE)) %>%
+  filter(Total > 1000000)
+
+# 3. Filtrem el dataset original pels noms seleccionats
+df_top <- df_fem %>% filter(Name %in% df_totals$Name)
+
+# 4. Agrupar per any i nom, i sumar total per any
+df_plot1 <- df_top %>%
+  group_by(Year, Name) %>%
+  summarise(Count = sum(Count), .groups = "drop")
+
+df_plot1
+```
+
+```{r}
+# Gràfica 1: Evolució temporal dels noms femenins majors de 4.500
+ggplot1 <- ggplot(df_plot1, aes(x = Year, y = Count, color = Name)) +
+  geom_line() +
+  labs(title = "Evolució temporal dels noms femenins majors de 4.500",
+       x = "Any", y = "Nombre") +
+  theme_minimal()
+ggplotly(ggplot1)
+```
+```{r}
+# Gràfica 2: Noms femenins més posats l'any 1945
+top_names_1945 <- df_fem %>%
+  filter(Year == 1945) %>%
+  group_by(Name) %>%
+  summarise(Count = sum(Count, na.rm = TRUE)) %>%
+  arrange(desc(Count)) %>%
+  slice_head(n = 3)
+top_names_1945
+
+df_top3 <- df_plot1 %>% filter(Name %in% top_names_1945$Name)
+df_top3
+```
+
+```{r}
+# Crear el gráfico
+ggplot2_top3 <- ggplot(df_top3, aes(x = Year, y = Count, color = Name)) +
+  geom_line() +
+  labs(title = "Evolució temporal del top 3 de noms de 1945",
+       x = "Any", y = "Nombre") +
+  theme_minimal()
+
+# Interactivo con plotly
+ggplotly(ggplot2_top3)
+```
+
+Mostra el codi i adjunta el fitxer AVI o GIF del Ranking de Barres Animades
+(Animated Bar Race Ranking) sobre els 10 noms femenins més posats entre els anys del
+1925 al 1950. Explica si fas Data Massaging i quines operacions fas i posa també el codi.
+```{r}
+# Data massaging per a l'animació
+df_anim <- df_fem %>%
+  filter(Year >= 1925 & Year <= 1950) %>%
+  group_by(Year, Name) %>%
+  summarise(Count = sum(Count, na.rm = TRUE), .groups = "drop") %>%
+  arrange(Year, desc(Count)) %>%
+  group_by(Year) %>%
+  mutate(Rank = row_number()) %>%
+  filter(Rank <= 10)
+
+# Creació de la gràfica animada (amb canvi dinàmic de posició)
+anim_plot <- ggplot(df_anim, aes(x = -Rank, y = Count, fill = Name)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  coord_flip() +
+  scale_x_continuous(breaks = -1:-10, labels = df_anim$Name[df_anim$Year == 1925]) +  # inicialment
+  labs(title = 'Top 10 Noms Femenins (1925-1950)',
+       subtitle = 'Any: {frame_time}',
+       x = 'Nom', y = 'Nombre') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(hjust = 1)) +
+  transition_time(Year) +
+  ease_aes('linear') +
+  labs(fill = "Nom")
+
+# Generació i guardat del GIF
+animated_gif <- animate(anim_plot, fps = 10, width = 800, height = 600, duration = 10, renderer = gifski_renderer())
+anim_save("top_noms_femenins_1925_1950.gif", animation = animated_gif)
+
+```
+
+Fes un bubble map per representar quants homes nascuts al 1940 van rebre el
+nom de “John” als estats de: Carolina del Nort "NC", California "CA", Wyoming "WY",
+Texas "TX", Alabama "AB" i New York "NY"
+```{r}
+str(all_states)
+```
+
+```{r}
+# Data massaging per al bubble map
+df_1940 <- all_states %>%
+  filter(Year == 1940, Sex == "M", Name == "John", State %in% c("NC", "CA", "WY", "TX", "AL", "NY"))
+
+```
+Fes un bubble map dels Estats Units , que doni informació sobre el nombre
+de rutes per cada ciutat. Pots usar el mapa de states de USA que vam usar
+al seminari. Al dibuixar-lo treu la graella del fons
+
+~ State, ~lat, ~lon,
+"CA", 36.77826, -119.4179,
+"NC", 35.20520, -78.82523,
+"WY", 42.983286, -107.548667,
+"TX", 30.779167, -97.808891,
+"AL", 32.318230, -86.902298,
+"NY", 39.76595, -75.00323 
+```{r}
+tibble_cities <- tibble::tribble(
+  ~State, ~lat, ~lon,
+  "CA", 36.77826, -119.4179,
+  "NC", 35.20520, -78.82523,
+  "WY", 42.983286, -107.548667,
+  "TX", 30.779167, -97.808891,
+  "AL", 32.318230, -86.902298,
+  "NY", 39.76595, -75.00323
+)
+
+df_1940 <- df_1940 %>%
+  group_by(State) %>%
+  summarise(Count = sum(Count, na.rm = TRUE), .groups = "drop")
+# Merge the tibble with the df_1940 to get counts for each state
+tibble_cities <- tibble_cities %>%
+  left_join(df_1940, by = "State") %>%
+  mutate(Count = ifelse(is.na(Count), 0, Count))
+
+# bubble of map and df_1940 and USA map
+bubble_map <- ggplot(tibble_cities, aes(x = lon, y = lat, size = Count, label = State)) +
+  borders("state", fill = "white", color = "black") +
+  geom_point(alpha = 0.5, color = "blue") +
+  scale_size(range = c(1, 20), name = "Nombre de John") +
+  labs(title = "Bubble Map de Noms 'John' al 1940 per Estat",
+       x = "Longitud", y = "Latitud") +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+ggplotly(bubble_map)
+```
+
+Mostra dos mapes d’arbre (treemaps). Un t’ha de permetre saber quins noms de
+cada sexe eren a la llista dels nou nascuts entre els top 30 l’any 1910. I l’altre
+t’ha d’ajudar a respondre quins seguien (o no) sent també entre els top 30 l’any 1950
+```{r}
+df_1910 <- all_states %>% filter(Year == 1910) %>% group_by(Name) %>% summarise(Count = sum(Count, na.rm = TRUE), .groups = "drop") %>% top_n(30, Count)
+
+treemap <- ggplot(df_1910, aes(area = Count, fill = Name, label = Name)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre", grow = TRUE) +
+  labs(title = "Top Noms de 1910",
+       subtitle = "Distribució dels noms per sexe",
+       fill = "Nom") +
+  theme_minimal() +
+  theme(legend.position = "none")
+  
+treemap # no hi ha implementacio per ggplotly per treemap
+```

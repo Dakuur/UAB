@@ -1,0 +1,5 @@
+SELECT DISTINCT C.CODI_ASSIGNATURA, C.GRUP
+FROM CLASSES C
+GROUP BY C.codi_assignatura, C.GRUP
+    HAVING COUNT(DISTINCT C.codi_aula) > 1
+ORDER BY C.codi_assignatura

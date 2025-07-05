@@ -1,0 +1,38 @@
+TEST = 1
+
+WIDTH : 3840
+HEIGHT: 2160
+LENGHT: 8294400
+
+STEP 1: K = 2
+STEP 2: Init centroids
+STEP 3: Updating centroids
+
+Number of K-Means iterations: 3
+
+Centroide 0 : R[68]	G[56]	B[45]
+Centroide 1 : R[196]	G[186]	B[171]
+
+Time to Kmeans is 0 seconds and 171985 microseconds
+Checksum value = 6405336
+
+ Performance counter stats for './kmeans_OpenMP.exe test 2 imagen.bmp':
+
+          1.416,40 msec task-clock:u                     #    4,477 CPUs utilized             
+                 0      context-switches:u               #    0,000 /sec                      
+                 0      cpu-migrations:u                 #    0,000 /sec                      
+               538      page-faults:u                    #  379,836 /sec                      
+     3.594.070.756      cycles:u                         #    2,537 GHz                         (67,20%)
+       189.689.215      stalled-cycles-frontend:u        #    5,28% frontend cycles idle        (66,84%)
+       725.764.376      stalled-cycles-backend:u         #   20,19% backend cycles idle         (66,36%)
+     6.476.010.780      instructions:u                   #    1,80  insn per cycle            
+                                                  #    0,11  stalled cycles per insn     (66,24%)
+       637.887.030      branches:u                       #  450,358 M/sec                       (66,49%)
+        25.005.795      branch-misses:u                  #    3,92% of all branches             (66,98%)
+
+       0,316358870 seconds time elapsed
+
+       1,385810000 seconds user
+       0,018812000 seconds sys
+
+

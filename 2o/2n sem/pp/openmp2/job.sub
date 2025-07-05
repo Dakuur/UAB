@@ -1,0 +1,28 @@
+#! /bin/bash
+#SBATCH --job-name=intro-lab
+#SBATCH -N 1 # number of nodes
+#SBATCH -n 8 # number of cores
+#SBATCH --partition=nodo.q
+
+# Descomenteu per inicialitzar la variable d'entorn OMP_NUM_THREADS
+# export OMP_NUM_THREADS=8
+
+# Carreguem la darrera versió del compilador gcc
+module load gcc/12.1.1
+
+# Es compila el programa passat com a 1r argument amb el flag openmp 
+# generant un executable amb el nom executable
+gcc -fopenmp  $1 -o a.out -lm
+
+# Executem el programa generat (si té un paràmetre el
+# passem com a 2n argument de l'script)
+# Si voleu mesurar temps i altres índexs de l'execució
+# afegiu la comanda perf stat
+# Si voleu executar el programa més d'un cop (amb diferents arguments), 
+# afegiu les línies que calguin  
+# perf stat ./a.out $2
+./a.out $2
+#likwid-perfctr -f -C 0-5 -g FLOPS_SP ./a.out $2
+
+# Esborrem l'executable per evitar futurs problemes
+rm a.out
