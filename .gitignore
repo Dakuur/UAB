@@ -1,0 +1,73 @@
+# Archivos grandes comunes
+*.zip
+*.rar
+*.tar.gz
+*.7z
+*.iso
+*.bin
+*.exe
+*.mp4
+*.mkv
+*.avi
+*.wav
+*.mov
+*.flac
+
+# Datos crudos o sets pesados
+*.csv
+*.tsv
+*.json
+*.xml
+*.parquet
+*.hdf5
+*.npz
+*.npy
+*.mat
+*.dat
+*.txt
+
+# Documentos pesados
+*.pdf
+*.pptx
+*.docx
+*.xlsx
+
+# Archivos temporales y backups
+*.tmp
+*.bak
+*.swp
+*.swo
+*.~*
+*.DS_Store
+Thumbs.db
+
+# Archivos de notebook checkpoints
+.ipynb_checkpoints/
+
+# Archivos de entorno virtual (Python)
+venv/
+.env
+.env.*
+
+# Carpeta de salida (build, dist, etc.)
+__pycache__/
+build/
+dist/
+*.egg-info/
+
+# Archivos de logs
+*.log
+
+# Carpetas personales o datos grandes
+datos_grandes/
+entregas_pasadas/
+videos_clase/
+
+# Ignorar entornos virtuales Python con nombres comunes
+*/venv/
+my-venv/
+*/my-venv/
+project-venv/
+*/project-venv/
+env/
+*/env/
