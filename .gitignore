@@ -27,10 +27,10 @@
 *.txt
 
 # Documentos pesados
-*.pdf
-*.pptx
-*.docx
-*.xlsx
+#*.pdf
+#*.pptx
+#*.docx
+#*.xlsx
 
 # Archivos temporales y backups
 *.tmp
